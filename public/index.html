@@ -1,17 +1,77 @@
 <!DOCTYPE html>
 <html lang="az">
 <head>
-<meta charset="utf-8">
+<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>MəktəbAI</title>
-<link rel="stylesheet" href="style.css">
+<title>Daxil ol — MəktəbAI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&family=Caveat:wght@600&display=swap&subset=latin-ext" rel="stylesheet">
+<link rel="stylesheet" href="login.css">
 </head>
 <body>
-<header>
-  <div class="logo">Məktəb<span>AI</span></div>
-  <div id="who"></div>
-</header>
-<main id="app"></main>
-<script src="app.js"></script>
+<div class="page">
+  <div class="side">
+    <a href="/" class="logo">Sokratik<span>AI</span></a>
+    <div class="center">
+      <div class="box">
+        <div class="tabs" role="tablist" aria-label="Giriş növü">
+          <button type="button" class="tab" role="tab" id="tab-student" aria-selected="true" aria-controls="loginForm">Valideyn</button>
+          <button type="button" class="tab" role="tab" id="tab-teacher" aria-selected="false" aria-controls="loginForm" tabindex="-1">Müəllim</button>
+        </div>
+        <h1 id="title">Salam!</h1>
+        <p class="sub" id="subtitle">Daxil ol və öyrənməyə qaldığın yerdən davam et.</p>
+        <form id="loginForm" role="tabpanel" novalidate>
+          <div class="field" id="idField">
+            <label for="identity" id="idLabel">E-poçt</label>
+            <input type="text" id="identity" name="identity" autocomplete="username" placeholder="məs. aysel@mail.com">
+            <div class="msg" id="idMsg"></div>
+          </div>
+          <div class="field" id="passField">
+            <label for="password">Şifrə</label>
+            <div class="input">
+              <input type="password" id="password" name="password" autocomplete="current-password" placeholder="Şifrəni yaz">
+              <button type="button" class="eye" id="eye" aria-label="Şifrəni göstər" aria-pressed="false">Göstər</button>
+            </div>
+            <div class="msg" id="passMsg"></div>
+          </div>
+          <button type="submit" class="btn btn-primary" id="submitBtn">Daxil ol</button>
+          <div class="ok" id="okMsg" role="status"></div>
+        </form>
+        <div id="teacherExtra" hidden></div>
+       <p class="alt" id="altText">Hesabın yoxdur? <a href="register.html">Qeydiyyatdan keç</a></p>
+      </div>
+    </div>
+  </div>
+  <aside class="brand" id="brand" aria-hidden="true">
+    <div class="brand-inner">
+      <div id="studentPanel">
+        <h2>Hər səhv bir mövzunu açır.</h2>
+        <div class="card">
+          <div class="progress"><i></i></div>
+          <small>Sual 2 / 5 · İşarə dəyişməsi</small>
+          <div class="q">2x = 14 − 6 olarsa, x neçədir?</div>
+          <span class="opt">x = 10</span>
+          <span class="opt right">x = 4</span>
+          <span class="opt">x = 7</span>
+          <div class="hint">Düzdür! Yoxla: 2·4 + 6 = 14.</div>
+        </div>
+        <p>Səhvlərin üzərində işlə, nəticə özü gələcək.</p>
+      </div>
+      <div id="teacherPanel" hidden>
+        <h2>Sinfin hansı mövzuda çətinlik çəkir, bir baxışda gör.</h2>
+        <div class="card">
+          <small>Nümunə · 8B sinfi · Tənliklər</small>
+          <div class="avg"><b>71</b><span>/ 100 sinif ortalaması</span></div>
+          <div class="topic"><div><span>İşarə dəyişməsi</span><span>9 şagird</span></div><div class="bar"><i style="width:75%"></i></div></div>
+          <div class="topic"><div><span>Mötərizələrin açılması</span><span>6 şagird</span></div><div class="bar"><i style="width:50%"></i></div></div>
+          <div class="topic"><div><span>Kəsrlər</span><span>3 şagird</span></div><div class="bar"><i style="width:25%"></i></div></div>
+        </div>
+        <p>Dərsə şagirdlərə ən çox lazım olan mövzudan başla.</p>
+      </div>
+    </div>
+  </aside>
+</div>
+<script src="login.js"></script>
 </body>
 </html>

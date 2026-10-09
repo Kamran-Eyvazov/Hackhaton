@@ -62,11 +62,14 @@ function newSession(userId) {
 const pub = u => ({ id: u.id, role: u.role, name: u.name, email: u.email });
 
 app.post('/api/register', (req, res) => {
-  const { role, name, email, password, className } = req.body;
+  const { role, name, password, className } = req.body;
+  const email = String(req.body.email || '').trim().toLowerCase();
   if (!['teacher', 'parent'].includes(role) || !name || !email || !password)
     return res.status(400).json({ error: 'Bütün sahələri doldurun' });
-  if (db.prepare('SELECT 1 FROM users WHERE email=?').get(email))
+   if (db.prepare('SELECT 1 FROM users WHERE email=?').get(email))
     return res.status(400).json({ error: 'Bu e-poçt artıq var' });
+  if (role === 'teacher' && !className)
+    return res.status(400).json({ error: 'Sinif adını yazın (məs. 5a)' });
   const { salt, hash } = hashPw(password);
   const id = db.prepare('INSERT INTO users(role,name,email,salt,hash) VALUES(?,?,?,?,?)')
     .run(role, name, email, salt, hash).lastInsertRowid;
@@ -80,7 +83,8 @@ app.post('/api/register', (req, res) => {
 });
 
 app.post('/api/login', (req, res) => {
-  const u = db.prepare('SELECT * FROM users WHERE email=?').get(req.body.email || '');
+  const id = String(req.body.identity || req.body.email || '').trim().toLowerCase();
+  const u = db.prepare('SELECT * FROM users WHERE email=?').get(id);
   if (!u || hashPw(req.body.password || '', u.salt).hash !== u.hash)
     return res.status(401).json({ error: 'E-poçt və ya şifrə səhvdir' });
   res.json({ token: newSession(u.id), user: pub(u) });
@@ -136,18 +140,20 @@ app.post('/api/children/:id/advice', auth, only('parent'), async (req, res) => {
 });
 
 // ---------- Uşaq rejimi: Sokratik AI ----------
-const SYSTEM = (topic, needs) => `Sən "MəktəbAI" adlı, Azərbaycan dilində danışan 5-ci sinif riyaziyyat müəllimisən. Mövzu: ${topic}.
+const SYSTEM = (topic, needs) => `Sən "MəktəbAI" adlı, Azərbaycan dilində danışan məktəb müəllimisən. 5-ci sinif şagirdinə istənilən məktəb mövzusunda (riyaziyyat, Azərbaycan dili, həyat bilgisi, təbiət, tarix, ingilis dili və s.) kömək edirsən.${topic && topic !== 'Sərbəst' ? ` Cari mövzu: ${topic}.` : ' Şagird mövzunu özü seçir.'}
 QAYDALAR:
-1. Heç vaxt final cavabı birbaşa demə. Yalnız BİR qısa Sokratik sual ver və ya kiçik ipucu ver.
-2. Şagirdin həllində səhv varsa, səhvin SƏBƏBİNİ müəyyən et: "concept" (səhv anlayış), "calculation" (hesablama səhvi), "gap" (əvvəlki mövzuda boşluq). Səhv yoxdursa "none".
-3. Şagird düzgün nəticəyə özü çatıbsa "solved": true yaz, təriflə və qısa yekun de.
-4. Mehriban, sadə dildə, maksimum 3 cümlə yaz.${needs === 'dyslexia' ? '\n5. Şagirdin disleksiyası var: çox qısa cümlələr və sadə sözlər işlət.' : ''}
+1. Tapşırıq və ya məsələ həlli suallarında final cavabı birbaşa demə. Yalnız BİR qısa Sokratik sual ver və ya kiçik ipucu ver.
+2. Sadə məlumat və ya izahat sualında (məs. "Günəş nədir?") aydın və qısa izah ver.
+3. Şagirdin həllində səhv varsa, səhvin SƏBƏBİNİ müəyyən et: "concept" (səhv anlayış), "calculation" (hesablama səhvi), "gap" (əvvəlki mövzuda boşluq). Səhv yoxdursa "none".
+4. Şagird düzgün nəticəyə özü çatıbsa "solved": true yaz, təriflə və qısa yekun de.
+5. Mehriban, sadə dildə, maksimum 3 cümlə yaz.
+6. Cavablar yaşa uyğun olmalıdır. Zorakılıq, yetkinlərə aid və ya təhlükəli mövzulardan mehribanlıqla imtina et və şagirdi dərs mövzusuna yönəlt.${needs === 'dyslexia' ? '\n7. Şagirdin disleksiyası var: çox qısa cümlələr və sadə sözlər işlət.' : ''}
 CAVAB FORMATI: yalnız JSON, başqa heç nə yazma:
 {"reply":"şagirdə mətn","error_type":"none|concept|calculation|gap","solved":false}`;
 
 app.post('/api/chat', auth, only('parent'), async (req, res) => {
   const c = ownChild(req, res); if (!c) return;
-  const { topic = 'Adi kəsrlər', messages = [] } = req.body;
+  const { topic = 'Sərbəst', messages = [] } = req.body;
   try {
     const raw = await claude(SYSTEM(topic, c.needs), messages.slice(-12), 500, true);
     let out;

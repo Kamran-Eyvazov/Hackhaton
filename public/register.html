@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="az"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Qeydiyyat</title>
+<style>
+body{font-family:sans-serif;background:#f4f4f8;display:flex;justify-content:center;padding:40px 16px}
+form{background:#fff;padding:24px;border-radius:12px;width:100%;max-width:380px;display:grid;gap:10px}
+input,select,button{padding:10px;font-size:16px;border:1px solid #ccc;border-radius:8px}
+button{background:#4a3fd6;color:#fff;border:0;cursor:pointer}
+#er{color:#d33;min-height:20px}
+</style></head><body>
+<form id="f">
+  <h2>Qeydiyyat</h2>
+  <select id="role"><option value="parent">Valideyn</option><option value="teacher">Müəllim</option></select>
+  <input id="name" placeholder="Ad Soyad">
+  <input id="email" placeholder="E-poçt">
+  <input id="pw" type="password" placeholder="Şifrə">
+  <input id="cn" placeholder="Sinif (məs. 5a)" hidden>
+  <div id="er"></div>
+  <button type="submit">Qeydiyyatdan keç</button>
+  <a href="/">Hesabım var, daxil ol</a>
+</form>
+<script>
+const $ = s => document.querySelector(s);
+$('#role').onchange = () => $('#cn').hidden = $('#role').value !== 'teacher';
+$('#f').onsubmit = async e => {
+  e.preventDefault();
+  try {
+    const r = await fetch('/api/register', {
+      method: 'POST', headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        role: $('#role').value, name: $('#name').value.trim(),
+        email: $('#email').value.trim(), password: $('#pw').value,
+        className: $('#cn').value.trim()
+      })
+    });
+    const j = await r.json();
+    if (!r.ok) throw new Error(j.error || 'Xəta');
+    localStorage.setItem('t', j.token);
+    if (j.classCode) alert('Sinif kodunuz: ' + j.classCode + '\nValideynlərə bu kodu verin.');
+    location.href = '/app.html';
+  } catch (err) { $('#er').textContent = err.message; }
+};
+</script></body></html>

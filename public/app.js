@@ -14,7 +14,7 @@ async function api(path, method = 'GET', body) {
   if (!r.ok) throw new Error(j.error || 'Xəta');
   return j;
 }
-function logout() { localStorage.removeItem('t'); S.token = null; S.user = null; init(); }
+function logout() { localStorage.removeItem('t'); location.href = '/'; }
 function setWho() {
   $('#who').innerHTML = S.user ? `<span class="mu">${esc(S.user.name)} (${S.user.role === 'teacher' ? 'Müəllim' : 'Valideyn'})</span> <button id="lo">Çıxış</button>` : '';
   if (S.user) $('#lo').onclick = logout;
@@ -87,7 +87,7 @@ function childMode(kid) {
   $('#app').innerHTML = `<div class="card ${['vision', 'dyslexia'].includes(kid.needs) ? 'big' : ''}" id="cc">
     <div class="row sp"><h2>${esc(kid.name)}: öyrənmə vaxtı</h2><button id="ex">⬅ Valideyn rejiminə qayıt</button></div>
     <div class="row"><select id="tp"><option>Adi kəsrlər</option><option>Onluq kəsrlər</option><option>Kəsrlərin müqayisəsi</option></select>
-    <button id="bg">🔠 Böyük şrift</button></div><br><div id="chat"></div>
+    <button id="bg">🔠 Böyük şrift</button>${kid.needs === 'hearing' ? '<button id="fg">🖐 Barmaqla cavab</button>' : ''}</div><br><div id="chat"></div>
     <div class="row"><input id="in" placeholder="Həllini və ya sualını yaz... (məs: 1/2 + 1/3 = 2/5)"><button class="p" id="sd">Göndər</button></div></div>`;
   const draw = () => {
     const c = $('#chat'); c.innerHTML = '';
@@ -121,6 +121,10 @@ function childMode(kid) {
   }
   $('#sd').onclick = send; $('#in').onkeydown = e => { if (e.key === 'Enter') send(); };
   $('#bg').onclick = () => $('#cc').classList.toggle('big');
+  if ($('#fg')) $('#fg').onclick = async () => {
+  const { openFingerCounter } = await import('/fingers.js');
+  openFingerCounter(n => { $('#in').value = ($('#in').value + ' ' + n).trim(); $('#in').focus(); });
+};
   $('#ex').onclick = () => { speechSynthesis.cancel(); parentView(); };
   $('#tp').onchange = () => { msgs.length = 0; view.splice(1); draw(); };
   draw();
@@ -153,9 +157,17 @@ async function teacherView() {
   };
 }
 
-function route() { setWho(); S.user.role === 'teacher' ? teacherView() : parentView(); }
+function route() {
+  setWho();
+  const view = S.user.role === 'teacher' ? teacherView : parentView;
+  view().catch(e => {
+    $('#app').innerHTML = `<div class="card"><h2>Xəta</h2><div class="err">${esc(e.message)}</div></div>`;
+    console.error(e);
+  });
+}
 async function init() {
-  if (S.token) { try { S.user = await api('/me'); return route(); } catch { logout(); return; } }
-  setWho(); authView();
+  if (!S.token) { location.href = '/'; return; }
+  try { S.user = await api('/me'); route(); }
+  catch { localStorage.removeItem('t'); location.href = '/'; }
 }
 init();
