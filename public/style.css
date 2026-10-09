@@ -1,0 +1,31 @@
+:root{--bg:#f6f7fb;--card:#fff;--tx:#1d2433;--mu:#6b7385;--pr:#4f46e5;--bd:#e3e6ef;--ai:#eef0ff;--me:#e8f7ee;--bad:#e5484d;--ok:#2f9e63;--warn:#e8a317}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font-family:system-ui,-apple-system,"Segoe UI",sans-serif;line-height:1.5}
+header{display:flex;justify-content:space-between;align-items:center;padding:12px 18px;background:var(--card);border-bottom:1px solid var(--bd)}
+.logo{font-weight:800;font-size:22px}.logo span{color:var(--pr)}
+main{max-width:920px;margin:0 auto;padding:16px}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:16px;margin-bottom:14px}
+h2{margin:0 0 6px}h3{margin:0 0 10px}
+.mu{color:var(--mu);font-size:14px}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.sp{justify-content:space-between}
+input,select{font:inherit;padding:10px;border-radius:10px;border:1px solid var(--bd);background:var(--bg);color:var(--tx);width:100%;margin:4px 0}
+.row input,.row select{width:auto;flex:1}
+button{font:inherit;cursor:pointer;border-radius:10px;border:1px solid var(--bd);background:var(--card);color:var(--tx);padding:9px 14px}
+button.p{background:var(--pr);color:#fff;border-color:var(--pr)}
+button:disabled{opacity:.5}
+.err{color:var(--bad);font-size:14px;min-height:20px}
+#chat{height:52vh;overflow-y:auto;display:flex;flex-direction:column;gap:10px;padding:4px}
+.m{max-width:85%;padding:10px 13px;border-radius:14px;white-space:pre-wrap}
+.m.ai{background:var(--ai);align-self:flex-start}.m.me{background:var(--me);align-self:flex-end}
+.tools{display:flex;gap:6px;margin-top:8px}
+.tools button{font-size:12px;padding:4px 8px}
+.big #chat{font-size:24px;line-height:1.7}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px}
+.stat{padding:12px;border:1px solid var(--bd);border-radius:12px}.stat b{font-size:26px;display:block}
+.bar{height:10px;border-radius:6px;background:var(--bd);overflow:hidden;margin:4px 0 10px}.bar i{display:block;height:100%}
+.tag{font-size:12px;padding:2px 8px;border-radius:99px;color:#fff}
+.sum{background:var(--ai);padding:12px;border-radius:12px;white-space:pre-wrap;margin-top:10px}
+.sc{overflow-x:auto}table{width:100%;border-collapse:collapse;font-size:14px}td,th{padding:8px;border-bottom:1px solid var(--bd);text-align:left}
+.tabs{display:flex;gap:6px;margin-bottom:10px}.tabs button.on{background:var(--pr);color:#fff}
+.code{font-family:monospace;font-size:20px;background:var(--ai);padding:6px 12px;border-radius:8px;display:inline-block}
