@@ -5,6 +5,7 @@ const { db, hashPw, crypto } = require('./db');
 const app = express();
 app.use(express.json());
 app.use(express.static('public'));
+app.get('/health', (req, res) => res.json({ ok: true }));
 
 const BASE = process.env.BASE_URL || 'https://api.openai.com/v1';
 const KEY = process.env.API_KEY || process.env.OPENAI_API_KEY;

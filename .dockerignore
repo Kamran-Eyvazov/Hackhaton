@@ -1,0 +1,11 @@
+# Railway-ə yalnız serverin işi üçün lazım olanlar gedir; açarlar Railway dəyişənlərindədir.
+.env
+.env.*
+node_modules/
+*.db
+*.db-wal
+*.db-shm
+
+# public/mediapipe-də artıq olan mediapipe paketinin xam nüsxələri
+mediapipe-tasks-vision-0.10.14.tgz
+package/

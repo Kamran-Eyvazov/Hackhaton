@@ -1,6 +1,6 @@
 const Database = require('better-sqlite3');
 const crypto = require('crypto');
-const db = new Database('mektebai.db');
+const db = new Database(process.env.DB_PATH || 'mektebai.db');
 db.pragma('foreign_keys = ON');
 db.pragma('journal_mode = WAL');
 
